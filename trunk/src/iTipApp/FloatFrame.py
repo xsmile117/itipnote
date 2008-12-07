@@ -62,6 +62,7 @@ class FloatFrame(wx.Frame):
         self.Bind(wx.EVT_LEFT_DOWN, self.OnFrameLeftDown)
         self.Bind(wx.EVT_LEFT_UP, self.OnFrameLeftUp)
         self.Bind(wx.EVT_MOTION, self.OnFrameMotion)
+        self.Bind(wx.EVT_QUERY_END_SESSION, self.OniTipExit)
         
             
     def SetWindowShape(self, evt=None):
@@ -177,8 +178,10 @@ class FloatFrame(wx.Frame):
         if alarm:
             times=1
         else:
-            times=((iTip.alarm-datetime.datetime(*time.localtime()[:6])).seconds)*1000
-        self.iTipAlarmers[iTip.id]=AlarmTimer(iTip)
+            alarmday=(iTip.alarm-datetime.datetime(*time.localtime()[:6])).days
+            alarmsecond=(iTip.alarm-datetime.datetime(*time.localtime()[:6])).seconds
+            times=(alarmday*86400+alarmsecond)*1000
+        self.iTipAlarmers[iTip.id]=AlarmTimer(iTip.id)
         self.iTipAlarmers[iTip.id].Start(times,oneShot=True)
         
     def deleteiTipAlarmer(self,id):
