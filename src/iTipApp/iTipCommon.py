@@ -21,16 +21,17 @@
 
 import wx
 import threading
-
+from iTipApp.iTipFunction import iTipWork
 
 class AlarmTimer(wx.Timer):
-    def __init__(self, iTip, sound='sound\\remind.wav',isPlay=True):
+    def __init__(self, id, sound='sound\\remind.wav',isPlay=True):
         wx.Timer.__init__(self)
-        self.iTip=iTip
+        self.iTipid=id
         self.sound=sound
         self.isPlay=isPlay
         
-    def Notify(self):     
+    def Notify(self):  
+        self.iTip=iTipWork().find(self.iTipid)   
         iTipShow=wx.FindWindowById(1108).showiTip(self.iTip)
         iTipShow.shineTimer.Start(500)
         iTipShow.Show()

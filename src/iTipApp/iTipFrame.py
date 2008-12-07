@@ -129,6 +129,7 @@ class iTipFrame(wx.Frame):
         self.panel.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
         self.iTipBrief.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
         self.clock.Bind(wx.EVT_ENTER_WINDOW, self.OnAlarmShow)
+        self.clock.Bind(wx.EVT_BUTTON, self.OniTipSave)
         
         self.Bind(wx.EVT_BUTTON, self.OniTipChange, self.iTipchange)
         self.Bind(wx.EVT_BUTTON, self.OniTipNew, self.new)
@@ -138,7 +139,7 @@ class iTipFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OniTipAlarm, self.alarm)
         self.Bind(wx.EVT_BUTTON, self.OniTipSet, self.set)
         
-        self.Bind(wx.EVT_SHOW, self.OnShow)
+        self.Bind(wx.EVT_SHOW, self.onShow)
         
         self.Bind(wx.EVT_TIMER, self.OniTipShine)
         # end wxGlade
@@ -244,6 +245,8 @@ class iTipFrame(wx.Frame):
         
     def OniTipChange(self,event):
         if self.isiTipChange:
+            if self.id!=-1:
+                self.saveStyle()
             self.miniTip()        
             self.isiTipChange=False
         else:
@@ -252,9 +255,11 @@ class iTipFrame(wx.Frame):
             self.panel1.Show()
             self.__do_layout()
             self.createdate.SetLabel("                                  ")
+            self.iTipBrief.Hide()
             if self.id!=-1:
                 self.iTipRefresh()
-            self.iTipBrief.Hide()
+                iTipsize=wx.Size(self.iTip.style.iTipsize_width,self.iTip.style.iTipsize_height)
+                self.SetSize(iTipsize) 
             self.isiTipChange=True
     
     def OniTipSave(self,event):
@@ -271,10 +276,12 @@ class iTipFrame(wx.Frame):
                 self.iTip=iTipApp.iTipAll[len(iTipApp.iTipAll)-1]
                 self.id=self.iTip.id
                 self.SetId(self.iTip.id)
+                self.saveStyle()
             else:
                 self.GetParent().deleteiTipAlarmer(self.iTip.id)
                 isAlarm=iTipWork().save(self.iTip, content, self.date, self.hour, self.min)
                 self.iTip=iTipWork().find(self.id)
+                self.saveStyle()
             self.iTipRefresh()
             self.RefreshiTipList()
             if isAlarm:
@@ -347,7 +354,7 @@ class iTipFrame(wx.Frame):
         self.content.SetValue(self.iTip.content)
         self.createdate.SetLabel(self.iTip.createdate.strftime('%Y-%m-%d %H:%M:%S'))
         self.createdate.Show()
-        self.SetSize(self.Size)
+        #self.SetSize(self.Size)
         self.MarkiTip(self.backcolour)
         self.TopiTip(self.winstyle)
         if self.iTip.isRead and (not self.shineTimer.IsRunning()):
@@ -364,22 +371,7 @@ class iTipFrame(wx.Frame):
         
     def OniTipHide(self,event):
         if self.id!=-1 and self.IsShown():
-            """ save style """
-            style=self.iTip.style
-            style.isiTipTop=self.isiTipTop
-            style.isiTipMark=self.isiTipMark
-            style.isiTipChange=self.isiTipChange
-            font=self.content.GetFont()
-            fontString=font.GetNativeFontInfo().ToString()
-            style.iTipfont=fontString
-            style.iTippos_x=self.GetScreenPosition().x
-            style.iTippos_y=self.GetScreenPosition().y
-            style.iTipsize_height=self.GetSize().GetHeight()
-            style.iTipsize_width=self.GetSize().GetWidth()
-            iTipWork().saveStyle(self.iTip)
-            self.iTip=iTipWork().find(self.id)
-            if self.iTip.isRead:
-                self.GetParent().addiTipAlarmer(self.iTip)
+            self.saveStyle()
             self.RefreshiTipList()
             self.Hide()
         elif self.id==-1:
@@ -428,17 +420,33 @@ class iTipFrame(wx.Frame):
         if self.id!=-1 and self.iTip.isRead==False:
             self.clock.Show()
         if self.id!=-1:
-             self.iTipBrief.SetLabel(self.iTip.brief)
-             self.iTipBrief.Show()
+            self.iTipBrief.SetLabel(self.iTip.brief)
+            self.iTipBrief.Show()
         self.__do_layout()
-
-    
-    def OnShow(self,event):
-        if self.id!=-1:
-            self.iTipRefresh()
         
     def OnAlarmShow(self,event):
         self.clock.SetToolTipString(self.iTip.alarm.strftime('%Y-%m-%d %H:%M:%S'))
+        
+    def saveStyle(self):
+        """ save style """
+        style=self.iTip.style
+        style.isiTipTop=self.isiTipTop
+        style.isiTipMark=self.isiTipMark
+        style.isiTipChange=self.isiTipChange
+        font=self.content.GetFont()
+        fontString=font.GetNativeFontInfo().ToString()
+        style.iTipfont=fontString
+        style.iTippos_x=self.GetScreenPosition().x
+        style.iTippos_y=self.GetScreenPosition().y
+        if self.isiTipChange==True:
+            style.iTipsize_height=self.GetSize().GetHeight()
+            style.iTipsize_width=self.GetSize().GetWidth()
+        iTipWork().saveStyle(self.iTip)
+        self.iTip=iTipWork().find(self.id)
+        
+    def onShow(self,event):      
+        if self.id!=-1 and self.isiTipChange:
+            self.iTipRefresh()  
 # end of class iTipFrame
 
 
