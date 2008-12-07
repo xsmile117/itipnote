@@ -129,7 +129,7 @@ class iTipFrame(wx.Frame):
         self.panel.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
         self.iTipBrief.Bind(wx.EVT_RIGHT_UP, self.OnRightClick)
         self.clock.Bind(wx.EVT_ENTER_WINDOW, self.OnAlarmShow)
-        self.clock.Bind(wx.EVT_BUTTON, self.OniTipSave)
+        self.clock.Bind(wx.EVT_BUTTON, self.OnAlarmStop)
         
         self.Bind(wx.EVT_BUTTON, self.OniTipChange, self.iTipchange)
         self.Bind(wx.EVT_BUTTON, self.OniTipNew, self.new)
@@ -447,6 +447,10 @@ class iTipFrame(wx.Frame):
     def onShow(self,event):      
         if self.id!=-1 and self.isiTipChange:
             self.iTipRefresh()  
+            
+    def OnAlarmStop(self,event):
+        if self.shineTimer.IsRunning():
+            self.OniTipSave(event)
 # end of class iTipFrame
 
 
