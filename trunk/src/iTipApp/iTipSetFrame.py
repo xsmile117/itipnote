@@ -149,8 +149,8 @@ class iTipSetDialog(wx.Dialog):
             iTipShow=wx.FindWindowById(iTip.id)
             if iTipShow!=None:
                 iTipColour=iTipApp.iTipMarkColour()
-                iTipShow.backcolour=iTipColour
                 if  iTipShow.IsShown() and iTipShow.isiTipMark:
+                    iTipShow.backcolour=iTipColour
                     iTipShow.MarkiTip(iTipColour)
                 
 
