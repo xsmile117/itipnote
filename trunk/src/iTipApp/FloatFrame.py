@@ -80,6 +80,7 @@ class FloatFrame(wx.Frame):
         for iTipShow in self.GetChildren():
             if type(iTipShow)==iTipFrame and iTipShow.IsShown():
                 iTipShow.OniTipHide(evt)
+                
         self.Destroy()
         
     def OnFrameLeftDown(self, event):
@@ -230,8 +231,18 @@ class FloatFrame(wx.Frame):
         for iTipShow in self.GetChildren():
             if type(iTipShow)==iTipFrame and iTipShow.id!=-1 and iTipShow.IsShown():
                 iTipOpens.append(str(iTipShow.id))
-        iTipOpenList='|'.join(iTipOpens)
-        self.cfg.Write('openlist',iTipOpenList)
+                iTipOpenList='|'.join(iTipOpens)
+                self.cfg.Write('openlist',iTipOpenList)
+    
+    # the code can't work while Systm ShutDown!          
+    #def RecordOpen(self):
+    #    iTipOpens=[]
+    #    for iTipShow in self.GetChildren():
+    #        if type(iTipShow)==iTipFrame and iTipShow.id!=-1 and iTipShow.IsShown():
+    #            iTipOpens.append(str(iTipShow.id))
+    #    iTipOpenList='|'.join(iTipOpens)
+    #    self.cfg.Write('openlist',iTipOpenList)
+    
 
     def DoOpen(self):
         if iTipApp.isiTipOpenOn:
